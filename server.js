@@ -12,7 +12,7 @@ var express = require('express'),
 	io = require('socket.io'),
 	mySqlStore = require('connect-mysql')(express),
 	configDb = require('./app/config/database'),
-	configSocket = require('./app/config/config.socket'),
+	configSocket = require('./app/config/iosocket'),
 	config = require('./app/config/app')[ENV];
 
 var redis 				= require('redis');
@@ -86,10 +86,10 @@ app.configure(function () {
 	app.use(allowCrossDomain);
 
 	app.use(express.session({
-			store : sessionStore,
-			secret : config.API.secret,
-			key :  config.API.key,
-			cookie : {
+			store 		: sessionStore,
+			secret 		: config.API.secret,
+			key 		:  config.API.key,
+			cookie 		: {
 				secure : false,
 				maxAge : new Date(Date.now() + 3600000)
 			}
@@ -100,7 +100,6 @@ app.configure(function () {
 
 	app.use(app.router);
 	app.use(flash());
-	app.use(express.csrf());
 
 });
 

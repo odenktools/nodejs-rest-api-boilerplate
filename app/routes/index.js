@@ -1,5 +1,5 @@
 module.exports = function (app, io, passport) {
 	
-	//require('../modules/notification/daf_perjanjian_karyawan')(app, io, passport);
+	require('../modules/user/index')(app, io, passport);
 
 };
