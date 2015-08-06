@@ -1,0 +1,26 @@
+{
+	"name" : "odenktools",
+	"description" : "NodeJS RestServer API",
+	"author" : {
+		"name" : "Moeloet Odenktools",
+		"email" : "odenktools86@gmail.com"
+	},
+	"dependencies" : {
+		"express" : "3.4.4",
+		"connect" : "2.11.0",
+		"mysql" : "2.0.x",
+		"socket.io" : "0.9.16",
+		"connect-flash" : "0.1.1",
+		"body-parser" : "1.4.3",
+		"session.socket.io" : "0.1.6",
+		"express-session" : "1.5.1",
+		"connect-redis" : "2.0.0",
+		"cookie" : "0.1.2",
+		"passport" : "0.1.18",
+		"connect-mysql" : "2.0.0",
+		"redis" : "0.10.0",
+		"passport-local" : "0.1.6",
+		"passport-http" : "0.2.2",
+		"wkhtmltopdf" : "0.1.5"
+	}
+}
