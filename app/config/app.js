@@ -8,7 +8,7 @@ module.exports = {
 		/* Nodejs default port ? */
 		port : 9999,
 		
-		domain : 'http://128.199.124.211',
+		domain : 'http://localhost',
 		
 		/* database settings */
 		db : {
