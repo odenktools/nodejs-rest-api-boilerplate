@@ -20,8 +20,4 @@ go to userguide folder then import nodejs_rest_api.sql
 npm start
 ```
 
-### Begin the test
-
-```sh
 curl -i -X POST http://localhost:9999/user/insert -d "id=1&username=admin&email=odenktools86@gmail.com"
-```
