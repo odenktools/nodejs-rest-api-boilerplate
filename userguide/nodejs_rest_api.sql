@@ -16,6 +16,21 @@ USE nodejs_rest_api;
 --
 -- Definition for table odk_menu
 --
+DROP TABLE IF EXISTS mahasiswa;
+CREATE TABLE mahasiswa (
+  id_mhs int(11) NOT NULL AUTO_INCREMENT,
+  nama_mhs varchar(50) DEFAULT NULL,
+  kelas_mhs varchar(15) DEFAULT NULL,
+  PRIMARY KEY (id_mhs)
+)
+ENGINE = INNODB
+AUTO_INCREMENT = 1
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
+
+--
+-- Definition for table odk_menu
+--
 DROP TABLE IF EXISTS odk_menu;
 CREATE TABLE IF NOT EXISTS odk_menu (
   id_menu INT(11) NOT NULL AUTO_INCREMENT,
@@ -34,8 +49,7 @@ CREATE TABLE IF NOT EXISTS odk_menu (
   INDEX FK_module_module_id_module (parent_menu)
 )
 ENGINE = INNODB
-AUTO_INCREMENT = 9
-AVG_ROW_LENGTH = 2048
+AUTO_INCREMENT = 1
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
@@ -61,8 +75,7 @@ CREATE TABLE IF NOT EXISTS odk_role (
   PRIMARY KEY (id_role)
 )
 ENGINE = INNODB
-AUTO_INCREMENT = 3
-AVG_ROW_LENGTH = 8192
+AUTO_INCREMENT = 1
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
@@ -89,8 +102,7 @@ CREATE TABLE IF NOT EXISTS odk_users (
   PRIMARY KEY (id_user)
 )
 ENGINE = INNODB
-AUTO_INCREMENT = 2
-AVG_ROW_LENGTH = 16384
+AUTO_INCREMENT = 1
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
@@ -111,7 +123,6 @@ CREATE TABLE IF NOT EXISTS odk_menu_permission (
     REFERENCES odk_role(id_role) ON DELETE RESTRICT ON UPDATE RESTRICT
 )
 ENGINE = INNODB
-AVG_ROW_LENGTH = 2340
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
@@ -132,10 +143,21 @@ CREATE TABLE IF NOT EXISTS odk_user_roles (
     REFERENCES odk_users(id_user) ON DELETE RESTRICT ON UPDATE RESTRICT
 )
 ENGINE = INNODB
-AUTO_INCREMENT = 2
-AVG_ROW_LENGTH = 16384
+AUTO_INCREMENT = 1
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
+
+
+-- 
+-- Dumping data for table mahasiswa
+--
+
+/*!40000 ALTER TABLE mahasiswa DISABLE KEYS */;
+INSERT INTO mahasiswa VALUES
+(1, 'moeloet', 'ti-7'),
+(2, 'tiara', 'ti-2'),
+(3, 'qiearman', 'ti-1');
+/*!40000 ALTER TABLE mahasiswa ENABLE KEYS */;
 
 -- 
 -- Dumping data for table odk_menu
@@ -171,7 +193,9 @@ INSERT INTO odk_role VALUES
 
 /*!40000 ALTER TABLE odk_users DISABLE KEYS */;
 INSERT INTO odk_users VALUES
-(1, 'moeloet', 'moeloet@moeloet.com', '$2y$10$Gc1sKX9A6tQLMl0AwDxTGu5e6CyOXDEw87RGN7oAkJm7pbdZsQjNG', 'moeloet', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2015-07-22 20:41:45', '2015-07-22 20:41:45');
+(1, 'moeloet', 'moeloet@moeloet.com', '$2y$10$Gc1sKX9A6tQLMl0AwDxTGu5e6CyOXDEw87RGN7oAkJm7pbdZsQjNG', 'moeloet', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2015-07-22 20:41:45', '2015-07-22 20:41:45'),
+(2, 'qiearman', 'qiearman@qiearman.com', '$2y$10$Gc1sKX9A6tQLMl0AwDxTGu5e6CyOXDEw87RGN7oAkJm7pbdZsQjNG', 'qiearman', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2015-07-22 20:41:45', '2015-07-22 20:41:45'),
+(3, 'tiara', 'tiara@moeloet.com', '$2y$10$Gc1sKX9A6tQLMl0AwDxTGu5e6CyOXDEw87RGN7oAkJm7pbdZsQjNG', 'tiara', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2015-07-22 20:41:45', '2015-07-22 20:41:45');
 
 /*!40000 ALTER TABLE odk_users ENABLE KEYS */;
 

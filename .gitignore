@@ -1,6 +1,6 @@
 /vendor
-composer.phar
-composer.lock
+/node_modules
+package.json
 /backup
 .DS_Store
 .env
