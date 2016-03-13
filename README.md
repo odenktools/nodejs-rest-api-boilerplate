@@ -43,3 +43,20 @@ curl -i -X POST http://localhost:9999/mahasiswa/insert -d "nama_mhs=whois&kelas_
 ```sh
 curl -i -X GET http://localhost:9999/mahasiswa/getAll
 ```
+
+## User
+
+User 1 :
+
+	username : moeloet
+	password : moeloet
+
+User 2 :
+	
+	username : tiara
+	password : tiara
+
+User 3 :
+
+	username : qiearman
+	password : qiearman

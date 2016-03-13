@@ -5,6 +5,9 @@ module.exports = {
 		/* Using Linux OS ? */
 		useLinux : false,
 		
+		/* Use Authentification */
+		useAuth : false,
+		
 		/* Nodejs default port ? */
 		port : 9999,
 		

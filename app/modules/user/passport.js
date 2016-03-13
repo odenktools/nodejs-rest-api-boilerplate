@@ -1,7 +1,8 @@
 var LocalStrategy = require('passport-local').Strategy;
-var db = require('./database');
+var db = require('../../../app/config/database');
 var crypto = require('crypto');
 var BasicStrategy = require('passport-http').BasicStrategy;
+var bcrypt = require('bcryptjs');
 
 exports.running = function (passport) {
 
@@ -24,10 +25,33 @@ exports.running = function (passport) {
 		}, function (username, password, done) {
 
 			process.nextTick(function () {
+				return check_auth_user(username, password, done);
+			});
 
-				var sql = "SELECT id, username FROM tb_user WHERE username = '" + username + "' AND password = '" + crypto.createHash('md5').update(password).digest("hex") + "' LIMIT 1;";
+		}));
 
-				db.dbSocket().query(sql,
+	
+	passport.use('basic-login', new BasicStrategy(
+
+			function (username, password, done) {
+
+			return check_auth_user(username, password, done);
+
+		}));
+
+	function check_auth_user(username, password, done) {
+		
+		var mUser = db.dbSocket().query("SELECT * FROM odk_users where username = '"+ username +"'");
+
+		mUser.on('result', function (user_res) {
+			
+			//console.log(username);
+
+			bcrypt.compare(password, user_res.passwd, function (err, pwdres) {
+
+				var sql = "SELECT id_user, username FROM odk_users WHERE username = '"+ username +"' LIMIT 1;";
+
+				db.connection.query(sql,
 
 					function (err, results) {
 
@@ -46,62 +70,19 @@ exports.running = function (passport) {
 							done(null, res);
 
 						});
-						
+
+						//console.log(results[0]['member_id']);
 						return done(null, res);
 
 					} else {
 
-						return done(null, false);
-
+						return done(null, false, {
+							message : 'Unknown user ' + username
+						});
 					}
-				})
+				});
 
 			});
-
-		}));
-
-	
-	passport.use('basic-login', new BasicStrategy(
-
-			function (username, password, done) {
-
-			return check_auth_user(username, password, done);
-
-		}));
-
-	function check_auth_user(username, password, done) {
-
-		var sql = "SELECT id, username FROM tb_user WHERE username = '" + username + "' AND password = '" + crypto.createHash('md5').update(password).digest("hex") + "' LIMIT 1;";
-
-		db.dbSocket().query(sql,
-
-			function (err, results) {
-
-			if (err)
-				throw err;
-
-			if (results.length > 0) {
-
-				var res = results[0];
-				//serialize the query result save whole data as session in req.user[] array
-				passport.serializeUser(function (res, done) {
-					done(null, res);
-				});
-
-				passport.deserializeUser(function (id, done) {
-					done(null, res);
-
-				});
-				
-				return done(null, res);
-
-			} else {
-
-				//return done(null, false, res.flash('loginMessage', 'Oops! Wrong password.'));
-
-				return done(null, false);
-
-			}
 		});
 	}
 

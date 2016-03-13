@@ -1,43 +1,43 @@
 var ENV = process.env.NODE_ENV || 'development';
 
 var express = require('express'),
-	http = require('http'),
-	connect = require('connect'),
-	connectSession = require('connect/lib/middleware/session/session'),
-	fs = require('fs'),
-	mysql = require('mysql'),
-	http = require('http'),
-	path = require('path'),
-	passport = require('passport'),
-	io = require('socket.io'),
-	mySqlStore = require('connect-mysql')(express),
-	configDb = require('./app/config/database'),
-	configSocket = require('./app/config/iosocket'),
-	config = require('./app/config/app')[ENV];
+http = require('http'),
+connect = require('connect'),
+connectSession = require('connect/lib/middleware/session/session'),
+fs = require('fs'),
+mysql = require('mysql'),
+http = require('http'),
+path = require('path'),
+passport = require('passport'),
+io = require('socket.io'),
+mySqlStore = require('connect-mysql')(express),
+configDb = require('./app/config/database'),
+configSocket = require('./app/config/iosocket'),
+config = require('./app/config/app')[ENV];
 
-var redis 				= require('redis');
-var flash 				= require('connect-flash');
-var bodyParser 			= require('body-parser');
+var redis = require('redis');
+var flash = require('connect-flash');
+var bodyParser = require('body-parser');
 
 /**
  * Use SessionSockets so that we can exchange (set/get) user data b/w sockets and http sessions
  * Pass 'jsessionid' (custom) cookie name that we are using to make use of Sticky sessions.
  */
-var SessionSockets 		= require('session.socket.io');
-var session 			= require('express-session');
-var RedisStore 			= require('connect-redis')(session);
-var socketRedisStore 	= require('socket.io/lib/stores/redis');
-var cookie 				= require('cookie');
+var SessionSockets = require('session.socket.io');
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+var socketRedisStore = require('socket.io/lib/stores/redis');
+var cookie = require('cookie');
 
-var connectionsArray 	= [];
-var activeClients 		= 0;
-var global_socket		= undefined;
+var connectionsArray = [];
+var activeClients = 0;
+var global_socket = undefined;
 
-var app 				= express();
+var app = express();
 
-var cookieParser 		= express.cookieParser(config.API.secret);
-var server 				= http.createServer(app);
-var sio 				= io.listen(server);
+var cookieParser = express.cookieParser(config.API.secret);
+var server = http.createServer(app);
+var sio = io.listen(server);
 
 var allowCrossDomain = function (req, res, next) {
 
@@ -52,14 +52,14 @@ var allowCrossDomain = function (req, res, next) {
 
 }
 
-var redisPub 			= redis.createClient();
-var redisSub 			= redis.createClient();
-var redisClient 		= redis.createClient();
+var redisPub = redis.createClient();
+var redisSub = redis.createClient();
+var redisClient = redis.createClient();
 
 // =========================================================================
 // AUTHENTIFICATION
 // =========================================================================
-require('./app/config/passport').running(passport);
+require('./app/modules/user/passport').running(passport);
 
 var sessionSockets;
 
@@ -70,7 +70,7 @@ app.configure(function () {
 		});
 
 	sessionSockets = new SessionSockets(sio, sessionStore, cookieParser, 'jsessionid');
-	
+
 	// =========================================================================
 	// DATABASE CONFIGURATION
 	// =========================================================================
@@ -86,17 +86,24 @@ app.configure(function () {
 	app.use(allowCrossDomain);
 
 	app.use(express.session({
-			store 		: sessionStore,
-			secret 		: config.API.secret,
-			key 		:  config.API.key,
-			cookie 		: {
+			store : sessionStore,
+			secret : config.API.secret,
+			key : config.API.key,
+			cookie : {
 				secure : false,
 				maxAge : new Date(Date.now() + 3600000)
+				//maxAge : 360*5
 			}
 		}));
 
+	passport.authorize({
+		passport : passport,
+		cookieParser : express.cookieParser,
+		key : 'connect.sid'
+	});
+
 	app.use(passport.initialize());
-	app.use(passport.session());
+	//app.use(passport.session());
 
 	app.use(app.router);
 	app.use(flash());
@@ -126,7 +133,7 @@ app.get('/authError', function (req, res) {
 
 /**
  * socket.io stuff. Streaming.
- * 
+ *
  * http://stackoverflow.com/questions/19156636/node-js-and-socket-io-creating-room
  */
 sio.configure(function () {
@@ -166,7 +173,7 @@ sio.configure(function () {
  * Socket Connection
  */
 sessionSockets.on('connection', function (err, socket) {
-	
+
 	var sessionID = socket.handshake.sessionID;
 
 	session = new connect.middleware.session.Session({

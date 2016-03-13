@@ -8,6 +8,8 @@ var db = require('../../../app/config/database');
 
 var configSocket = require('../../../app/config/iosocket');
 
+var bcrypt = require('bcryptjs');
+
 /**
  *
  */
@@ -32,6 +34,14 @@ var SV_MOD_PREF = serverPref + SOCKET_MOD_NAME;
  * Express SubModules
  */
 module.exports = function (app, io, passport) {
+	
+	if(app.isUseAuth)
+	{
+		
+	}
+
+	//Use Authentification
+	app.all(PATH + '/*', passport.authenticate('local', {failureRedirect: '/authError'}) );
 	
 	var fetchData = function(socket){
 		
@@ -76,8 +86,8 @@ module.exports = function (app, io, passport) {
 
         query
             .on('result', function (resMhs) {
-
-                //console.log(mahasiswa);
+				
+				
                 recordsMhs.push(resMhs);
 
             })

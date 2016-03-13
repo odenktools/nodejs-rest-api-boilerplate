@@ -21,6 +21,7 @@
 		"redis" : "0.10.0",
 		"passport-local" : "0.1.6",
 		"passport-http" : "0.2.2",
-		"wkhtmltopdf" : "0.1.5"
+		"wkhtmltopdf" : "0.1.5",
+		"bcryptjs" : "2.3.0"
 	}
 }
