@@ -41,7 +41,7 @@ module.exports = function (app, io, passport) {
 	}
 
 	//Use Authentification
-	app.all(PATH + '/*', passport.authenticate('local', {failureRedirect: '/authError'}) );
+	//app.all(PATH + '/*', passport.authenticate('local', {failureRedirect: '/authError'}) );
 	
 	var fetchData = function(socket){
 		
@@ -74,6 +74,41 @@ module.exports = function (app, io, passport) {
 		});
 		
 	};
+	
+	io.sockets.on('connection', function (socket) {
+
+		socket.on(CL_MOD_PREF + '-get-record', function () {
+
+			fetchData();
+
+		});
+		
+		//INSERT DATA USING SOCKET.IO
+		socket.on(CL_MOD_PREF + '-insert', function (data) {
+			
+			var _data = JSON.parse(data.data);
+			
+			if(_data.kelas_mhs == ''){
+				
+				_data.kelas_mhs = 'ti7';
+			}
+			
+			var query = db.dbSocket().query("INSERT INTO mahasiswa (nama_mhs,kelas_mhs) VALUES('" + _data.nama_mhs + "','" + _data.kelas_mhs + "');");
+			
+			var recordsMhs = [];
+			
+			query
+			.on('result', function (resMahasiswa) {
+				recordsMhs.push(resMahasiswa);
+			})
+			.on('end', function () {
+				fetchData();
+			});
+		
+		
+		});
+		
+	});
 	
     /**
      * http://localhost:9999/mahasiswa/getAll
@@ -141,15 +176,84 @@ module.exports = function (app, io, passport) {
 			
 			console.log('body: ' + JSON.stringify(nama_mhs));
 			
+			//res.json({records: {id: recordsMhs.insertId, usename: data.username, email: data.email}});
+			
+			data.id_mhs = recordsMhs.insertId;
+			data.totals = 1;
+
+			
 			io.sockets.volatile.emit(SV_MOD_PREF + '-doInsertLoad', {
-				nama_mhs: nama_mhs,
+				records : data,
+				//nama_mhs: nama_mhs,
 				totals: 1
 			});
 			
+			
+			//fetchData();
+			
 			//RECORDS ADALAH JSON (DIPERUNTUKAN REST)
-			res.json({nama_mhs: nama_mhs});
+			res.json(data);
 			
 		});
     });
+	
+	/**
+	 * http://localhost:9999/mahasiswa/insert
+	 */
+	app.post(PATH + '/edit', function (req, res) {
 
+		//var nama = req.body.id;
+		//var kelas = req.body.kelas;
+		var id = req.body.id;
+
+		var query = db.dbSocket().query("SELECT * FROM mahasiswa where id_mhs = '" + id + "';");
+
+		var users = [];
+
+		query
+		.on('result', function (user) {
+
+			//console.log(user);
+			users.push(user);
+
+		})
+		.on('end', function () {
+
+			res.json({
+				records : users,
+				totals : users.length
+			});
+
+		});
+
+	});
+	
+	/**
+	 * http://localhost:9999/mahasiswa/hapus
+	 */
+	app.post(PATH + '/hapus', function (req, res) {
+	
+		var id = req.body.id;
+
+		db.dbSocket().query("DELETE FROM mahasiswa where id_mhs = '" + id + "';", function (err, info) {
+
+			if (info.affectedRows > 0) {
+			
+				res.json({
+					result : 'success',
+					message : 'ok'
+				});
+				
+				fetchData();
+				
+			} else {
+
+				res.json({
+					result : 'gagal',
+					message : 'gagal'
+				});
+			}
+		});
+	});
+	
 };
